@@ -25,13 +25,12 @@ def train(model, train_data, optimizer, scheduler):
     for batch_roberta_inputs in tqdm(train_data):
         input_ids = batch_roberta_inputs['input_ids'].squeeze().to(device)
         attention_mask = batch_roberta_inputs['attention_mask'].squeeze().to(device)
-        loss_batch = nn.CrossEntropyLoss()
-        y_pred = model(input_ids,
-                       attention_mask=attention_mask,
-                       # token_type_ids=batch_token_type_ids TODO
-                       )
-        labels = torch.tensor([1]+[0]*20).to(device)
-        loss = loss_batch(y_pred, labels)
+
+        loss = model(input_ids,
+                     device,
+                     attention_mask=attention_mask,
+                     # token_type_ids=batch_token_type_ids 
+                     )
 
         model.zero_grad()
         loss.backward()
@@ -88,9 +87,9 @@ def evaluate(model, data_iterator, BATCH_NUM):
 
 
 def fit(model, device, train_data, optimizer, scheduler, args, val_data=None, test_data=None):
-    with open('../../result/NCBI/pytorch_roberta/best_7月_f1.txt') as f:
+    with open('result/best_7月_f1.txt') as f:
         best_f1 = float(f.read())
-    for epoch in range(1, args.epochs+1):
+    for epoch in range(1, args.epochs + 1):
         logger.info(f'Epoch {epoch}/{args.epochs}')
 
         # 模型训练
@@ -110,20 +109,20 @@ def fit(model, device, train_data, optimizer, scheduler, args, val_data=None, te
         logger.info('\t'.join('{}: {:.4%}'.format(k, v) for k, v in test_result.items()))
         if test_result['f1'] > best_f1:
             best_f1 = test_result['f1']
-            with open('../../result/NCBI/pytorch_roberta/best_7月_f1.txt', 'w') as f:
+            with open('result/best_7月_f1.txt', 'w') as f:
                 f.write(str(best_f1))
-            torch.save(model.state_dict(), '../../result/NCBI/pytorch_roberta/best_7月.state')
+            torch.save(model.state_dict(), 'result/best_7月.state')
 
         result = [v for v in test_result.values()]
         result.extend([val_result['f1'], val_result['precision'], val_result['recall']])
         his.append(result)
         header = list(test_result.keys())
         header.extend(['val_f1', 'val_pre', 'val_rec'])
-        pd.DataFrame(his).to_excel('../../result/NCBI/pytorch_roberta/7_%d日%d点%d分his_log.xlsx'
+        pd.DataFrame(his).to_excel('result/7_%d日%d点%d分his_log.xlsx'
                                    % (
-                                      localtime.tm_mday,
-                                      localtime.tm_hour,
-                                      localtime.tm_min),
+                                       localtime.tm_mday,
+                                       localtime.tm_hour,
+                                       localtime.tm_min),
                                    header=header
                                    )
 
@@ -158,11 +157,9 @@ if __name__ == '__main__':
 
     optimizer = AdamW(model.parameters(), lr=args.learning_rate, correct_bias=False)
     warmup_steps = len(train_set) // 21
-    scheduler = get_linear_schedule_with_warmup(optimizer, num_warmup_steps=warmup_steps, num_training_steps=args.epochs*warmup_steps)
+    scheduler = get_linear_schedule_with_warmup(optimizer, num_warmup_steps=warmup_steps, num_training_steps=args.epochs * warmup_steps)
 
     logger.info(f'----------开始训练---------')
     fit(model, device, train_data, optimizer, scheduler, args,
         val_data, test_data
         )
-
-
