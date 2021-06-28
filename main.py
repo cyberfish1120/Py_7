@@ -26,14 +26,20 @@ def train(model, train_data, optimizer, scheduler):
         input_ids = batch_roberta_inputs['input_ids'].squeeze().to(device)
         attention_mask = batch_roberta_inputs['attention_mask'].squeeze().to(device)
 
-        loss = model(input_ids,
-                     device,
-                     attention_mask=attention_mask,
-                     # token_type_ids=batch_token_type_ids
-                     )
+        main_out, sim_out = model(input_ids,
+                                  device,
+                                  attention_mask=attention_mask,
+                                  # token_type_ids=batch_token_type_ids
+                                  )
+        """二分类loss"""
+        main_loss_fn = nn.CrossEntropyLoss()
+        main_loss = main_loss_fn(main_out, torch.tensor([1]+[0]*20).to(device))
+        """对比loss"""
+        sim_loss_fn = nn.CrossEntropyLoss()
+        sim_loss = sim_loss_fn(sim_out, torch.tensor([0]).to(device))
 
         model.zero_grad()
-        loss.backward()
+        main_loss.backward()
         # performs updates using calculated gradients
         optimizer.step()
         scheduler.step()
