@@ -29,7 +29,7 @@ def train(model, train_data, optimizer, scheduler):
         loss = model(input_ids,
                      device,
                      attention_mask=attention_mask,
-                     # token_type_ids=batch_token_type_ids 
+                     # token_type_ids=batch_token_type_ids
                      )
 
         model.zero_grad()
