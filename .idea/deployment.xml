@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="PublishConfigData" serverName="zzq@10.1.18.195:22 password">
+    <serverData>
+      <paths name="zhaoziqiang@10.1.18.225:222 password">
+        <serverdata>
+          <mappings>
+            <mapping local="$PROJECT_DIR$" web="/" />
+          </mappings>
+        </serverdata>
+      </paths>
+      <paths name="zzq@10.1.18.195:22 password">
+        <serverdata>
+          <mappings>
+            <mapping deploy="/data/zzq/MyProject/梁老师NER实验/NCBI_code/Py_7" local="$PROJECT_DIR$" web="/" />
+          </mappings>
+        </serverdata>
+      </paths>
+      <paths name="梁老师NER实验">
+        <serverdata>
+          <mappings>
+            <mapping local="$PROJECT_DIR$" web="/" />
+          </mappings>
+        </serverdata>
+      </paths>
+    </serverData>
+  </component>
+</project>
