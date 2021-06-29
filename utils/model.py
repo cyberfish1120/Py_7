@@ -29,7 +29,7 @@ class MyModel(nn.Module):
         """对比loss"""
         sim_out = self.sim_dropout(sequence_output)
         sim_out = self.simmlp(sim_out)
-        sim_out = sim_out.reshape(1, 21)
+        # sim_out = sim_out.reshape(1, 21)
         # sim_loss_fn = nn.CrossEntropyLoss()
         # sim_loss = sim_loss_fn(sim_out, torch.tensor([0]).to(device))
 

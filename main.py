@@ -35,11 +35,14 @@ def train(model, train_data, optimizer, scheduler):
         main_loss_fn = nn.CrossEntropyLoss()
         main_loss = main_loss_fn(main_out, torch.tensor([1]+[0]*20).to(device))
         """对比loss"""
+        sim_out = sim_out.reshape(1, 21)
         sim_loss_fn = nn.CrossEntropyLoss()
         sim_loss = sim_loss_fn(sim_out, torch.tensor([0]).to(device))
 
+        loss = main_loss + 0.1 * sim_loss
+
         model.zero_grad()
-        main_loss.backward()
+        loss.backward()
         # performs updates using calculated gradients
         optimizer.step()
         scheduler.step()
@@ -56,7 +59,7 @@ def evaluate(model, data_iterator, BATCH_NUM):
         for _ in one_epoch:
             batch_input_ids, batch_token_type_ids, batch_attention_mask, batch_labels, y_type = next(data_iterator)
 
-            y_pred = model(batch_input_ids,
+            y_pred, _ = model(batch_input_ids,
                            # attention_mask=batch_attention_mask,
                            # token_type_ids=batch_token_type_ids
                            )
